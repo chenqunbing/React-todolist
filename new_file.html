@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>React ToDoList Two</title>
+		<script src="https://cdn.bootcss.com/react/15.0.0/react.min.js"></script>
+		<script src="https://cdn.bootcss.com/react/0.14.9/react-dom.min.js"></script>
+		<script src="js/browser.min.js"></script>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script type="text/babel">
+			var container=document.getElementById('container');
+			var ToDoListItem=React.createClass({
+				handleDelete:function(e){
+					var entries=this.props.entries;
+					var index=e.target.getAttribute("data-index");
+					entries.splice(index,1);
+					this.props.change(entries);
+				},
+				render:function(){
+					var entries=this.props.entries;
+					var itemList=entries.map(function(item,i){
+						return (
+							<li key={item.key}>
+								{item.text}
+								<button data-index={i} onCilck={this.handleDelete}>Delete</button>
+								<button>Modify</button>
+							</li>
+						)
+					}.bind(this))
+					return (
+						<div>
+							<ul>{itemList}</ul>
+						</div>
+					)
+				}
+			})
+			var ToDoList=React.createClass({
+				getInitialState:function(){
+					return {
+						items:[]
+					}
+				},
+				handleSubmit:function(e){
+					var itemArray=this.state.items;
+					itemArray.push({
+						text:this._inputElement.value,
+						key:Date.now()
+					})
+					this.setState({items:itemArray});
+					this._inputElement.value='';
+					e.preventDefault();
+				},
+				handleChange:function(entries){
+					this.setState({
+						items:entries
+					})
+				},
+				render:function(){
+					return (
+						<div id='todolistMain'>
+							<div id='header'>
+								<form onSubmit={this.handleSubmit}>
+									<input ref={a=>this._inputElement=a} type='text' placeholder='enter value' />
+									<button type='submit'>Add</button>
+								</form>
+							</div>
+							<ToDoListItem entries={this.state.items} change={this.handleChange}/>
+						</div>
+					)
+				}
+			})
+			
+			ReactDOM.render(<ToDoList />,container);
+		</script>
+	</body>
+</html>

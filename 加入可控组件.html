@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!--这里是两个组件，当然取不到同一个this了，用状态提升改改啊！你这智商啊！-->
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="https://cdn.bootcss.com/react/15.0.0/react.min.js"></script>
+		<script src="https://cdn.bootcss.com/react/0.14.9/react-dom.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script type="text/babel">
+			var TodoList=React.createClass({
+				getInitialState:function(){
+					return {
+						todolist:[]
+					};
+				},
+				handleChange:function(rows){
+					this.setState({
+						todolist:rows
+					});
+				},
+				render:function(){
+					return (
+						<div>
+							<TypeNew todo={this.state.todolist} add={this.handleChange} />
+							<ListTodo todo={this.state.todolist} change={this.handleChange} />
+						</div>
+					)
+				}
+			});
+			var TypeNew=React.createClass({
+				getInitialState:function(){
+					return ({
+						value:''
+					})
+				},
+				handleChange:function(e){
+					this.setState({
+						value:e.target.value
+					})
+				},
+				handleAdd:function(){
+					var newthing=this.state.value;
+					var rows=this.props.todo;
+					if(newthing==''){
+						alert("数据不能为空！");
+						return ;
+					}
+					rows.push(newthing);
+					this.props.add(rows);
+					this.setState({
+						value:''
+					});
+				},
+				render:function(){
+					return (
+						<form>
+							<input type="text" value={this.state.value} onChange={this.handleChange} placeholder='enter value' />
+							<input type='button' value='add' onClick={this.handleAdd}/>
+						</form>
+					)
+				}
+			})
+			var ListTodo=React.createClass({
+				getInitialState:function(){
+					return {
+						changenum:-1,
+						changevalue:''
+					}
+				},
+				handleDelete:function(e){
+					var rows=this.props.todo;
+					var index=e.target.getAttribute("data-index");
+					rows.splice(index,1);
+					this.props.change(rows);
+				},
+				handleModify:function(e){
+					/*只要改变 它的一个state，那么它就会的到刷新，至于这里为什么还是取不到msg的值还不知道！*/
+					var index=e.target.getAttribute("data-index");
+//					var msg=this._inputElement.value;
+//					console.log(msg);
+					this.setState({
+						changenum:index
+					});
+//					this.setState({
+//						changenum:index,
+//						changevalue:msg
+//					});
+				},
+				handleText:function(e){
+					this.setState({
+						changevalue:e.target.value
+					})
+				},
+				handleSave:function(){
+					var newthing=this.state.changevalue;
+					var rows=this.props.todo;
+					if(newthing==''){
+						alert("不能输入空数据！");
+						return ;
+					}
+					var index=this.state.changenum;
+					rows[index]=newthing;
+					this.props.change(rows);
+					this.setState({
+						changenum:-1,
+					})
+				},
+				render:function(){
+					return (
+						<ul id='todolist'>
+							{
+								this.props.todo.map(function(item,i){
+									if(this.state.changenum==i){
+										return (
+											<li>
+												<input type='text'  onChange={this.handleText}/>
+												<button onClick={this.handleSave}>确定</button>
+											</li>
+										);
+									}else{
+										return (
+											<li>
+												<span>{item}</span>
+												<button onClick={this.handleDelete} data-index={i}>删除</button>
+												<button onClick={this.handleModify} data-index={i}>修改</button>
+											</li>
+										);
+									}
+								}.bind(this))
+							}
+						</ul>
+					)
+				}
+			})
+			
+			ReactDOM.render(<TodoList />,container);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>React ToDoList one</title>
+		<script src="https://cdn.bootcss.com/react/15.0.0/react.min.js"></script>
+		<script src="https://cdn.bootcss.com/react/0.14.9/react-dom.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<style type="text/css">
+			body{
+				padding: 50px;
+				background-color: lightblue;
+				font-family: sans-serif;
+			}
+			.todolistMain .header input{
+				padding: 20px;
+				font-size: 14px;
+			}
+			.todolistMain .header button{
+				color: #fff;
+				background-color: green;
+				cursor: pointer;
+				padding: 20px;
+				margin: 10px;
+			}
+			.todolistMain .item{
+				list-style: none;
+			    padding-left: 0;
+			    width: 255px;
+			}
+			.todolistMain .item li{
+				background-color: red;
+			    margin-bottom: 10px;
+			    border-radius: 8px;
+			    padi: 10px;
+			    padding: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="conatiner"></div>
+		<script type="text/babel">
+			var container=document.getElementById("conatiner");
+			var TodolistItem=React.createClass({
+				render:function(){
+					var entries=this.props.entries;
+//					var listItem=entries.map(function(item){
+//						return <li key={item.key}>{item.text}</li>
+//					})
+					function createtasks(item){
+						return <li key={item.key}>{item.text}</li>;
+					}
+					var listItem=entries.map(createtasks);
+					
+					return (
+						<ul className='item'>{listItem}</ul>
+					)
+				}
+			})
+			var TodoList=React.createClass({
+				getInitialState:function(){
+					return {
+						items:[]
+					};
+				},
+				handleSubmit:function(e){
+					var itemArray=this.state.items;
+					itemArray.push({
+						text:this._inputElement.value,
+						key:Date.now()
+					})
+					this.setState({
+						items:itemArray
+					})
+					this._inputElement.value='';
+					e.preventDefault();
+				},
+				render:function(){
+					return (
+						<div className='todolistMain'>
+							<div className='header'>
+								<form onSubmit={this.handleSubmit}>
+									<input ref={a=>this._inputElement=a} type='text' placeholder='enter task' />
+									<button type='submit'>add</button>
+								</form>
+							</div>
+							<TodolistItem  entries={this.state.items}/>
+						</div>
+					)
+				}
+			})
+			
+			ReactDOM.render(<TodoList />,container);
+		</script>
+	</body>
+</html>
